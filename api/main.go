@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"glif/config"
 	"glif/handlers"
+	"glif/recover"
 	"log"
 	"net/http"
 
@@ -11,17 +11,11 @@ import (
 )
 
 func main() {
-	defer recoverFromPanic()
+	defer recover.RecoverPanic()
 	http.HandleFunc("/wallet", handlers.BalanceHandler)
 	http.HandleFunc("/transaction", handlers.SubmitTransactionHandler)
 	http.HandleFunc("/transactions", handlers.GetTransactionsHandler)
 
 	log.Println("Server is running on port", config.Settings.ServerPort)
 	log.Fatal(http.ListenAndServe(config.Settings.ServerPort, nil))
-}
-
-func recoverFromPanic() {
-	if r := recover(); r != nil {
-		fmt.Println("Recovered from panic:", r)
-	}
 }

@@ -2,18 +2,18 @@ package filecoin
 
 import (
 	"context"
-	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"glif/config"
 	"glif/constants"
 	"glif/db"
+	"glif/recover"
 	"log"
 	"time"
 )
 
 func update(txHash string) {
-	defer recoverFromPanic()
+	defer recover.RecoverPanic()
 	ctx, cancel := context.WithTimeout(context.Background(), config.Settings.TransactionReceiptTimeout)
 	defer cancel()
 	ticker := time.NewTicker(config.Settings.TransactionTickerInterval)
@@ -65,10 +65,4 @@ func getTransactionStatus(txHash string, ctx context.Context) (string, error) {
 	}
 
 	return constants.StatusMap[receipt.Status], nil
-}
-
-func recoverFromPanic() {
-	if r := recover(); r != nil {
-		fmt.Println("Recovered from panic:", r)
-	}
 }
